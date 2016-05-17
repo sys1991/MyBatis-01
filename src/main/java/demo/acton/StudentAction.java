@@ -11,11 +11,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.channels.NonWritableChannelException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Administrator on 2016/5/16.
- *
  */
 @WebServlet(urlPatterns = "/student")
 public class StudentAction extends HttpServlet {
@@ -48,19 +50,34 @@ public class StudentAction extends HttpServlet {
     }
 
     protected void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Student student = new Student();
-        student.setEmail(req.getParameter("email"));
-        student.setLastIp(req.getRemoteAddr());
+        String email = req.getParameter("email");
+        String password = req.getParameter("password");
 
-        try (SqlSession sqlSession = MyBatisSqlSession.getSqlSession(true)) {
-           List<Student> students= sqlSession.selectList("student.login",student);
-            for (Student s:students) {
-                if (s.getPassword().equals(req.getParameter("password"))) {
-                    sqlSession.update("student.login", student);
+        try (SqlSession sqlSession = MyBatisSqlSession.getSqlSession(false)) {
+            List<Student> students = sqlSession.selectList("student.login", email);
+            if (students.size() == 1) {
+                Student student = students.get(0);
+                String encrypedPassword = student.getPassword();
+                StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
+                if (encryptor.checkPassword(password, encrypedPassword)) {
+                    String lastIp = req.getRemoteAddr();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
+                    String lastLogin = simpleDateFormat.format(new Date());
+
+                    student.setLastIp(lastIp);
+                    student.setLastLogin(lastLogin);
+                    sqlSession.update("student.update", student);
+                    sqlSession.commit();
+
+                    student.setPassword(null);
+                    req.getSession().setAttribute("student", student);
                     resp.sendRedirect("/student/index.jsp");
                 } else {
-                    continue;
+
+                    req.setAttribute("message", "检查账号或者密码");
+                    req.getRequestDispatcher("/index.jsp").forward(req, resp);
                 }
+
             }
         }
     }
