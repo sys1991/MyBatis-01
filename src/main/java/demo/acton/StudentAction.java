@@ -36,12 +36,16 @@ public class StudentAction extends HttpServlet {
         String password = req.getParameter("password");
         StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
         password = passwordEncryptor.encryptPassword(password);
+        String photo = req.getParameter("photo");
+        int classId = Integer.parseInt(req.getParameter("classId"));
 
         Student student = new Student();
-        student.setEmail(req.getParameter("email"));
-        student.setUsername(req.getParameter("username"));
+        student.setEmail(req.getParameter("email").trim());
+        student.setUsername(req.getParameter("username").trim());
         student.setPassword(password);
+        student.setPhoto(photo);
         student.setLastIp(req.getRemoteAddr());
+        student.setClassId(classId);
 
         try (SqlSession sqlSession = MyBatisSqlSession.getSqlSession(true)) {
             sqlSession.insert("student.create", student);
@@ -57,11 +61,11 @@ public class StudentAction extends HttpServlet {
             List<Student> students = sqlSession.selectList("student.login", email);
             if (students.size() == 1) {
                 Student student = students.get(0);
-                String encrypedPassword = student.getPassword();
+                String encryptedPassword = student.getPassword();
                 StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
-                if (encryptor.checkPassword(password, encrypedPassword)) {
+                if (encryptor.checkPassword(password, encryptedPassword)) {
                     String lastIp = req.getRemoteAddr();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String lastLogin = simpleDateFormat.format(new Date());
 
                     student.setLastIp(lastIp);

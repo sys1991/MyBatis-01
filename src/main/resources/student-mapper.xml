@@ -5,12 +5,12 @@
 <mapper namespace="student">
     <!-- namespace的值是UserMapper的全限定名FQN -->
     <insert id="create" parameterType="demo.model.Student" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO mybatis.student VALUES (NULL,#{email},#{username},#{password},#{lastIp},now())
+        INSERT INTO mybatis.student VALUES (NULL,#{email},#{username},#{password},#{photo},#{lastIp},now(),#{classId})
     </insert>
     <select id="login" parameterType="demo.model.Student" resultType="demo.model.Student">
         SELECT * FROM mybatis.student WHERE email = #{email}
     </select>
     <update id="update" parameterType="demo.model.Student">
-        UPDATE mybatis.student SET last_ip = #{lastIp} , last_login =now() WHERE id = #{id}
+        UPDATE mybatis.student SET last_ip = #{lastIp} , last_login =#{lastLogin} WHERE id = #{id}
     </update>
 </mapper>

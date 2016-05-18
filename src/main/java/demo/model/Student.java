@@ -1,27 +1,32 @@
 package demo.model;
 
+import java.io.Serializable;
+
 /**
- *
  * Created by Administrator on 2016/5/16.
  */
-public class Student {
+public class Student implements Serializable {
     private Integer id;
     private String email;
     private String username;
     private String password;
+    private String photo;
     private String lastIp;
     private String lastLogin;
+    private Integer classId;
 
     public Student() {
     }
 
-    public Student(Integer id, String email, String username, String password, String lastIp, String lastLogin) {
+    public Student(Integer id, String email, String username, String password, String photo, String lastIp, String lastLogin, Integer classId) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.photo = photo;
         this.lastIp = lastIp;
         this.lastLogin = lastLogin;
+        this.classId = classId;
     }
 
     public Integer getId() {
@@ -32,8 +37,8 @@ public class Student {
         this.id = id;
     }
 
-    public String getEmail(String email) {
-        return this.email;
+    public String getEmail() {
+        return email;
     }
 
     public void setEmail(String email) {
@@ -56,6 +61,14 @@ public class Student {
         this.password = password;
     }
 
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
     public String getLastIp() {
         return lastIp;
     }
@@ -72,6 +85,14 @@ public class Student {
         this.lastLogin = lastLogin;
     }
 
+    public Integer getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Integer classId) {
+        this.classId = classId;
+    }
+
     @Override
     public String toString() {
         return "Student{" +
@@ -79,8 +100,10 @@ public class Student {
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", photo='" + photo + '\'' +
                 ", lastIp='" + lastIp + '\'' +
                 ", lastLogin='" + lastLogin + '\'' +
+                ", classId=" + classId +
                 '}';
     }
 }
